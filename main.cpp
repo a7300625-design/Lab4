@@ -105,3 +105,35 @@ void quick_sort(std::vector<InternetSession>& arr, int low, int high, bool (*com
 
     print_sessions(result, "Протокол использования сети после 8:00:00");
 }
+
+int main() {
+    std::ifstream infile("input.txt");
+    if (!infile.is_open()) {
+        std::cerr << "Ошибка открытия файла input.txt\n";
+        return 1;
+    }
+
+    std::vector<InternetSession> sessions;
+    std::string line;
+    while (std::getline(infile, line)) {
+        if (!line.empty()) {
+            sessions.push_back(parse_line(line));
+        }
+    }
+    infile.close();
+
+    filter_skype(sessions);
+    filter_after_0800(sessions);
+
+    std::vector<InternetSession> sort1 = sessions;
+    insertion_sort(sort1, compare_by_duration);
+    print_sessions(sort1, "Сортировка ВСТАВКАМИ: По убыванию времени сессии");
+
+    std::vector<InternetSession> sort2 = sessions;
+    if (!sort2.empty()) {
+        quick_sort(sort2, 0, sort2.size() - 1, compare_by_program_and_traffic);
+    }
+    print_sessions(sort2, "БЫСТРАЯ сортировка: По имени программы и трафику");
+
+    return 0;
+}
