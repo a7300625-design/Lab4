@@ -57,5 +57,51 @@ void filter_after_0800(const std::vector<InternetSession>& sessions) {
             result.push_back(s);
         }
     }
+
+    bool compare_by_duration(const InternetSession& a, const InternetSession& b) {
+    return a.get_duration() > b.get_duration();
+}
+
+bool compare_by_program_and_traffic(const InternetSession& a, const InternetSession& b) {
+    if (a.program != b.program) {
+        return a.program < b.program;
+    }
+    return (a.received + a.sent) > (b.received + b.sent);
+}
+
+void insertion_sort(std::vector<InternetSession>& arr, bool (*compare)(const InternetSession&, const InternetSession&)) {
+    int n = arr.size();
+    for (int i = 1; i < n; i++) {
+        InternetSession key = arr[i];
+        int j = i - 1;
+        while (j >= 0 && compare(key, arr[j])) {
+            arr[j + 1] = arr[j];
+            j--;
+        }
+        arr[j + 1] = key;
+    }
+}
+
+int partition(std::vector<InternetSession>& arr, int low, int high, bool (*compare)(const InternetSession&, const InternetSession&)) {
+    InternetSession pivot = arr[high];
+    int i = (low - 1);
+    for (int j = low; j <= high - 1; j++) {
+        if (compare(arr[j], pivot)) {
+            i++;
+            std::swap(arr[i], arr[j]);
+        }
+    }
+    std::swap(arr[i + 1], arr[high]);
+    return (i + 1);
+}
+
+void quick_sort(std::vector<InternetSession>& arr, int low, int high, bool (*compare)(const InternetSession&, const InternetSession&)) {
+    if (low < high) {
+        int pi = partition(arr, low, high, compare);
+        quick_sort(arr, low, pi - 1, compare);
+        quick_sort(arr, pi + 1, high, compare);
+    }
+}
+
     print_sessions(result, "Протокол использования сети после 8:00:00");
 }
