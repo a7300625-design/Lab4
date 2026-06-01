@@ -32,3 +32,30 @@ InternetSession parse_line(const std::string& line) {
     std::getline(ss, session.program);
     return session;
 }
+void print_sessions(const std::vector<InternetSession>& sessions, const std::string& title) {
+    std::cout << "\n=== " << title << " ===\n";
+    for (const auto& s : sessions) {
+        std::cout << s.start_time << " " << s.end_time << " " 
+                  << s.received << " " << s.sent << " " << s.program << "\n";
+    }
+}
+
+void filter_skype(const std::vector<InternetSession>& sessions) {
+    std::vector<InternetSession> result;
+    for (const auto& s : sessions) {
+        if (s.program.find("Skype") != std::string::npos) {
+            result.push_back(s);
+        }
+    }
+    print_sessions(result, "Протокол использования сети программой Skype");
+}
+
+void filter_after_0800(const std::vector<InternetSession>& sessions) {
+    std::vector<InternetSession> result;
+    for (const auto& s : sessions) {
+        if (s.start_time >= "08:00:00") {
+            result.push_back(s);
+        }
+    }
+    print_sessions(result, "Протокол использования сети после 8:00:00");
+}
